@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { TaskListDto, TaskListDtoWithoutId } from '../dtos';
+import { ListDto, ListDtoWithoutId } from '../dtos';
 
 @Injectable()
 export class TaskListMapper {
-  toDto(dto: TaskListDtoWithoutId, insertedId: string): TaskListDto {
+  toDto(dto: ListDtoWithoutId, insertedId: string): ListDto {
     return {
       id: insertedId,
       title: dto.title,

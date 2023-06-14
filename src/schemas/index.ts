@@ -1,1 +1,1 @@
-export * from './task-list.schema';
+export * from './list.schema';

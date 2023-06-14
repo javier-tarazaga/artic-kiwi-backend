@@ -1,60 +1,71 @@
 import { Injectable } from '@nestjs/common';
 import {
-  CreateTaskListDto,
-  TaskListDto,
-  TaskListDtoWithoutId,
-  UpdateTaskListDto,
+  CreateListDto,
+  ListDto,
+  ListDtoWithoutId,
+  UpdateListDto,
 } from '../dtos';
 import { MongoClient, ObjectId } from 'mongodb';
 import { TaskListMapper } from 'src/mappers/tasl-list.mapper';
 
 @Injectable()
-export class TaskListRepository {
+export class ListRepository {
   constructor(
     private readonly client: MongoClient,
     private readonly mapper: TaskListMapper,
   ) {}
 
-  async getTaskLists(): Promise<TaskListDto[]> {
-    const taskLists = await this.client
+  async getList(id: string): Promise<ListDto> {
+    const list = await this.client
       .db('artic-kiwi')
-      .collection<TaskListDto>('task-lists')
+      .collection<ListDto>('lists')
+      .findOne({
+        _id: new ObjectId(id),
+      });
+
+    return this.mapper.toDto(list, id);
+  }
+
+  async getLists(): Promise<ListDto[]> {
+    const lists = await this.client
+      .db('artic-kiwi')
+      .collection<ListDto>('lists')
       .find()
       .toArray();
 
-    return taskLists.map((taskList) =>
+    return lists.map((taskList) =>
       this.mapper.toDto(taskList, taskList._id.toString()),
     );
   }
 
-  async createTaskList(input: CreateTaskListDto): Promise<TaskListDto> {
-    const valueToInsert: TaskListDtoWithoutId = {
+  async createList(input: CreateListDto): Promise<ListDto> {
+    const valueToInsert: ListDtoWithoutId = {
       ...input,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    const taskList = await this.client
+    const list = await this.client
       .db('artic-kiwi')
-      .collection<Omit<TaskListDto, 'id'>>('task-lists')
+      .collection<Omit<ListDto, 'id'>>('lists')
       .insertOne(valueToInsert);
 
-    return this.mapper.toDto(valueToInsert, taskList.insertedId.toString());
+    return this.mapper.toDto(valueToInsert, list.insertedId.toString());
   }
 
-  async updateTaskList(input: UpdateTaskListDto): Promise<TaskListDto> {
+  async updateList(input: UpdateListDto): Promise<ListDto> {
     const updated = await this.client
       .db('artic-kiwi')
-      .collection<TaskListDto>('task-lists')
+      .collection<ListDto>('lists')
       .updateOne({ _id: new ObjectId(input.id) }, { $set: input });
 
-    const taskList = await this.client
+    const list = await this.client
       .db('artic-kiwi')
-      .collection<TaskListDto>('task-lists')
+      .collection<ListDto>('lists')
       .findOne({
         _id: updated.upsertedId,
       });
 
-    return this.mapper.toDto(taskList, updated.upsertedId.toString());
+    return this.mapper.toDto(list, updated.upsertedId.toString());
   }
 }

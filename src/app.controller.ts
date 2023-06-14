@@ -1,32 +1,36 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { TaskService } from './services/task.service';
-import { TaskListDto, UpdateTaskListDto } from './dtos';
+import { ListService } from './services/list.service';
+import { CreateListDto, ListDto, UpdateListDto } from './dtos';
 import { JoiValidationPipe } from '@app/core';
-import { CreateTaskListDto } from './dtos/create-task-list.dto';
-import { createTaskListSchema, updateTaskListSchema } from './schemas';
+import { createListSchema, updateListSchema } from './schemas';
 
-@Controller('taskList')
+@Controller('list')
 export class AppController {
-  constructor(private readonly appService: TaskService) {}
+  constructor(private readonly appService: ListService) {}
+
+  @Get()
+  getAllList(): Promise<ListDto[]> {
+    return this.appService.getLists();
+  }
 
   @Get(':id')
-  getTaskList(): Promise<TaskListDto[]> {
-    return this.appService.getTaskLists();
+  getList(@Param('id') id: string): Promise<ListDto> {
+    return this.appService.getList(id);
   }
 
   @Post()
-  createTaskList(
-    @Body(new JoiValidationPipe(createTaskListSchema)) input: CreateTaskListDto,
-  ): Promise<TaskListDto> {
-    return this.appService.createTaskList(input);
+  createList(
+    @Body(new JoiValidationPipe(createListSchema)) input: CreateListDto,
+  ): Promise<ListDto> {
+    return this.appService.createList(input);
   }
 
   @Patch(':id')
-  updateTaskList(
+  updateList(
     @Param('id') id: string,
-    @Body(new JoiValidationPipe(updateTaskListSchema)) input: UpdateTaskListDto,
-  ): Promise<TaskListDto> {
-    return this.appService.updateTaskList({
+    @Body(new JoiValidationPipe(updateListSchema)) input: UpdateListDto,
+  ): Promise<ListDto> {
+    return this.appService.updateList({
       ...input,
       id,
     });
