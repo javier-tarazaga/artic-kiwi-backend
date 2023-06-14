@@ -1,4 +1,5 @@
 export interface UpdateTaskListDto {
-  id: number;
+  id: string;
   title: string;
+  updatedAt: Date;
 }

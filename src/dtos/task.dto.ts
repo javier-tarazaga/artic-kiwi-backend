@@ -1,4 +1,4 @@
 export interface TaskDto {
-  id: number;
+  id: string;
   title: string;
 }

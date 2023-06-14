@@ -1,36 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTaskListDto, TaskListDto, UpdateTaskListDto } from '../dtos';
+import { TaskListRepository } from 'src/repositories';
 
 @Injectable()
 export class TaskService {
-  getTaskLists(): TaskListDto[] {
-    return [
-      {
-        id: 1,
-        title: 'Task List 1',
-        tasks: [
-          {
-            id: 1,
-            title: 'Task 1',
-          },
-        ],
-      },
-    ];
+  constructor(private readonly taskListRepository: TaskListRepository) {}
+  getTaskLists(): Promise<TaskListDto[]> {
+    return this.taskListRepository.getTaskLists();
   }
 
-  createTaskList(input: CreateTaskListDto): TaskListDto {
-    return {
-      id: 1,
-      title: input.title,
-      tasks: [],
-    };
+  createTaskList(input: CreateTaskListDto): Promise<TaskListDto> {
+    return this.taskListRepository.createTaskList(input);
   }
 
-  updateTaskList(input: UpdateTaskListDto): TaskListDto {
-    return {
-      id: 1,
-      title: input.title,
-      tasks: [],
-    };
+  updateTaskList(input: UpdateTaskListDto): Promise<TaskListDto> {
+    return this.taskListRepository.updateTaskList(input);
   }
 }

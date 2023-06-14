@@ -1,7 +1,11 @@
 import { TaskDto } from './task.dto';
 
+export type TaskListDtoWithoutId = Omit<TaskListDto, 'id'>;
+
 export interface TaskListDto {
-  id: number;
+  id: string;
   title: string;
-  tasks: TaskDto[];
+  createdAt: Date;
+  updatedAt: Date;
+  tasks?: TaskDto[];
 }

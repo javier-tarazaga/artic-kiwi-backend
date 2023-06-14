@@ -10,22 +10,22 @@ export class AppController {
   constructor(private readonly appService: TaskService) {}
 
   @Get(':id')
-  getTaskList(): TaskListDto[] {
+  getTaskList(): Promise<TaskListDto[]> {
     return this.appService.getTaskLists();
   }
 
   @Post()
   createTaskList(
     @Body(new JoiValidationPipe(createTaskListSchema)) input: CreateTaskListDto,
-  ): TaskListDto {
+  ): Promise<TaskListDto> {
     return this.appService.createTaskList(input);
   }
 
   @Patch(':id')
   updateTaskList(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body(new JoiValidationPipe(updateTaskListSchema)) input: UpdateTaskListDto,
-  ): TaskListDto {
+  ): Promise<TaskListDto> {
     return this.appService.updateTaskList({
       ...input,
       id,
