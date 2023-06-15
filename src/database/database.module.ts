@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongoClient } from 'mongodb';
-import { mongoClient } from './database/mongo.client';
-import { ListModule } from './list/list.module';
+import { mongoClient } from './mongo.client';
 
 @Module({
-  imports: [ListModule],
+  imports: [],
   providers: [{ useValue: mongoClient, provide: MongoClient }],
+  exports: [MongoClient],
 })
-export class AppModule {}
+export class DatabaseModule {}

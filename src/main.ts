@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { mongoClient } from './db/mongo.client';
+import { mongoClient } from './database/mongo.client';
 import * as dotenv from 'dotenv';
 
 async function bootstrap() {
