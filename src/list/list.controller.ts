@@ -5,7 +5,7 @@ import { JoiValidationPipe } from '@app/core';
 import { createListSchema, updateListSchema } from './schemas';
 
 @Controller('list')
-export class AppController {
+export class ListController {
   constructor(private readonly appService: ListService) {}
 
   @Get()

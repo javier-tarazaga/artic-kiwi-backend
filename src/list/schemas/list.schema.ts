@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { CreateListDto, UpdateListDto } from 'src/dtos';
+import { CreateListDto, UpdateListDto } from 'src/list/dtos';
 
 export type UpdateUserGameInputDto = Omit<UpdateListDto, 'id' | 'userId'>;
 

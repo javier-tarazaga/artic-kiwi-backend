@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateListDto, ListDto, UpdateListDto } from '../dtos';
-import { ListRepository } from 'src/repositories';
+import { ListRepository } from 'src/list/repositories';
 
 @Injectable()
 export class ListService {

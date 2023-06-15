@@ -19,3 +19,8 @@ export interface UpdateListDto {
   title: string;
   updatedAt: Date;
 }
+
+export interface AddTaskToListDto {
+  listId: ListDto['id'];
+  task: TaskDto;
+}

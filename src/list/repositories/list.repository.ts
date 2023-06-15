@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import {
+  AddTaskToListDto,
   CreateListDto,
   ListDto,
   ListDtoWithoutId,
   UpdateListDto,
 } from '../dtos';
 import { MongoClient, ObjectId } from 'mongodb';
-import { TaskListMapper } from 'src/mappers/tasl-list.mapper';
+import { TaskListMapper } from 'src/list/dtos/mappers/tasl-list.mapper';
 
 @Injectable()
 export class ListRepository {
@@ -59,13 +60,20 @@ export class ListRepository {
       .collection<ListDto>('lists')
       .updateOne({ _id: new ObjectId(input.id) }, { $set: input });
 
-    const list = await this.client
+    const list = await this.getList(input.id);
+    return this.mapper.toDto(list, updated.upsertedId.toString());
+  }
+
+  async addTaskToList(input: AddTaskToListDto): Promise<ListDto> {
+    const updated = await this.client
       .db('artic-kiwi')
       .collection<ListDto>('lists')
-      .findOne({
-        _id: updated.upsertedId,
-      });
+      .updateOne(
+        { _id: new ObjectId(input.listId) },
+        { $push: { tasks: input.task } },
+      );
 
+    const list = await this.getList(input.listId);
     return this.mapper.toDto(list, updated.upsertedId.toString());
   }
 }

@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import * as Services from './services';
-import * as Mappers from './mappers';
-import * as Repositories from './repositories';
+import { ListController } from './list/list.controller';
+import * as Services from './list/services';
+import * as Mappers from './list/dtos/mappers';
+import * as Repositories from './list/repositories';
 import { MongoClient } from 'mongodb';
 import { mongoClient } from './db/mongo.client';
 
 @Module({
   imports: [],
-  controllers: [AppController],
+  controllers: [ListController],
   providers: [
     { useValue: mongoClient, provide: MongoClient },
     ...Object.values(Services),
