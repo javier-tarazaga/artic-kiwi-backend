@@ -1,7 +1,5 @@
 import Joi from 'joi';
-import { CreateListDto, UpdateListDto } from 'src/list/dtos';
-
-export type UpdateUserGameInputDto = Omit<UpdateListDto, 'id' | 'userId'>;
+import { CreateListDto } from 'src/list/dtos';
 
 export const createListSchema = Joi.object<CreateListDto>({
   title: Joi.string().required(),

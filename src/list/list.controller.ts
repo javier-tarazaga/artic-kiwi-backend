@@ -6,23 +6,23 @@ import { createListSchema, updateListSchema } from './schemas';
 
 @Controller('list')
 export class ListController {
-  constructor(private readonly appService: ListService) {}
+  constructor(private readonly listService: ListService) {}
 
   @Get()
   getAllList(): Promise<ListDto[]> {
-    return this.appService.getLists();
+    return this.listService.getLists();
   }
 
   @Get(':id')
   getList(@Param('id') id: string): Promise<ListDto> {
-    return this.appService.getList(id);
+    return this.listService.getList(id);
   }
 
   @Post()
   createList(
     @Body(new JoiValidationPipe(createListSchema)) input: CreateListDto,
   ): Promise<ListDto> {
-    return this.appService.createList(input);
+    return this.listService.createList(input);
   }
 
   @Patch(':id')
@@ -30,7 +30,7 @@ export class ListController {
     @Param('id') id: string,
     @Body(new JoiValidationPipe(updateListSchema)) input: UpdateListDto,
   ): Promise<ListDto> {
-    return this.appService.updateList({
+    return this.listService.updateList({
       ...input,
       id,
     });
