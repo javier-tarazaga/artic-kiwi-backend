@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   CreateListDto,
+  DeleteListDto,
   ListDto,
   ListDtoWithoutId,
   UpdateListDto,
@@ -63,5 +64,14 @@ export class ListRepository {
 
     const list = await this.getList(input.id);
     return this.mapper.toDto(list, updated.upsertedId.toString());
+  }
+
+  async deleteList(input: DeleteListDto): Promise<boolean> {
+    const deleted = await this.client
+      .db('artic-kiwi')
+      .collection<ListDto>('lists')
+      .deleteOne({ _id: new ObjectId(input.id) });
+
+    return deleted.acknowledged;
   }
 }

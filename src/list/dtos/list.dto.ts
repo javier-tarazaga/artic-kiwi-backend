@@ -14,5 +14,8 @@ export type CreateListDto = Omit<ListDto, 'id' | 'createdAt' | 'updatedAt'> & {
 export interface UpdateListDto {
   id: ListDto['title'];
   title: string;
-  updatedAt: Date;
+}
+
+export interface DeleteListDto {
+  id: ListDto['title'];
 }

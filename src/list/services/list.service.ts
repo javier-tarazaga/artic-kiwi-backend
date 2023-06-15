@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateListDto, ListDto, UpdateListDto } from '../dtos';
+import { CreateListDto, DeleteListDto, ListDto, UpdateListDto } from '../dtos';
 import { ListRepository } from 'src/list/repositories';
 import { ArticKiwiError, ArticKiwiException } from '@app/server-errors';
 
@@ -30,5 +30,9 @@ export class ListService {
 
   updateList(input: UpdateListDto): Promise<ListDto> {
     return this.listRepository.updateList(input);
+  }
+
+  deleteList(input: DeleteListDto): Promise<boolean> {
+    return this.listRepository.deleteList(input);
   }
 }

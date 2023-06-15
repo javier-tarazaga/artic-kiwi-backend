@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { GraphQLFormattedError } from 'graphql';
 // import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import { UserDto } from 'src/user';
+import { join } from 'path';
 
 export interface GraphQLContext {
   me: UserDto;
@@ -14,13 +15,9 @@ export interface GraphQLContext {
 export class GraphqlOptionsFactory implements GqlOptionsFactory {
   createGqlOptions(): ApolloDriverConfig {
     return {
-      playground: false,
+      playground: true,
+      autoSchemaFile: join(process.cwd(), 'src/gateway/schemal.gql'),
       // plugins: [ApolloServerPluginLandingPageLocalDefault()],
-      typePaths: [
-        process.env.NODE_ENV === 'local' || process.env.NODE_ENV === 'test'
-          ? './**/gateway/**/*.graphql'
-          : './**/*.graphql',
-      ],
       path: '/graphql',
       formatError: (params) => this.formatError(params),
       context: (params) => this.context(params),
