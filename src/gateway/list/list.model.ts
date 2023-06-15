@@ -11,6 +11,12 @@ export class List {
 
   @Field(() => [Task])
   tasks: Task[];
+
+  @Field(() => Date)
+  createdAt: Date;
+
+  @Field(() => Date)
+  updatedAt: Date;
 }
 
 @InputType()

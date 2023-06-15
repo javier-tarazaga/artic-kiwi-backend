@@ -7,6 +7,12 @@ export class Task {
 
   @Field()
   title: string;
+
+  @Field(() => Date)
+  createdAt: Date;
+
+  @Field(() => Date)
+  updatedAt: Date;
 }
 
 @InputType()
