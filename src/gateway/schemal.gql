@@ -3,12 +3,12 @@
 # ------------------------------------------------------
 
 type Task {
-  id: Int!
+  id: String!
   title: String!
 }
 
 type List {
-  id: Int!
+  id: String!
   title: String!
   tasks: [Task!]!
 }

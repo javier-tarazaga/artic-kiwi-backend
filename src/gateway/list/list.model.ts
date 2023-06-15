@@ -1,9 +1,9 @@
-import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { Task } from '../task';
 
 @ObjectType()
 export class List {
-  @Field(() => Int)
+  @Field(() => String)
   id: string;
 
   @Field()
