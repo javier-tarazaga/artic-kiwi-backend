@@ -1,5 +1,4 @@
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
-import { ListService } from 'src/list/services';
 import { TaskService } from 'src/task/services';
 import {
   CreateTaskInput,
@@ -9,24 +8,21 @@ import {
 } from './task.model';
 
 @Resolver(() => Task)
-export class ListResolver {
-  constructor(
-    private listService: ListService,
-    private taskService: TaskService,
-  ) {}
+export class TaskResolver {
+  constructor(private taskService: TaskService) {}
 
   @Mutation(() => Task)
   async createTask(@Args('input') input: CreateTaskInput) {
-    return this.listService.createList(input);
+    return this.taskService.createTask(input);
   }
 
   @Mutation(() => Task)
   async updateList(@Args('input') input: UpdateTaskInput) {
-    return this.listService.updateList(input);
+    return this.taskService.updateTask(input);
   }
 
   @Mutation(() => Task)
   async deleteList(@Args('input') input: DeleteTaskInput) {
-    return this.listService.deleteList(input);
+    return this.taskService.deleteTask(input);
   }
 }

@@ -1,0 +1,43 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Task {
+  id: Int!
+  title: String!
+}
+
+type List {
+  id: Int!
+  title: String!
+  tasks: [Task!]!
+}
+
+type Query {
+  lists: [List!]!
+}
+
+type Mutation {
+  createTask(input: CreateTaskInput!): Task!
+  updateList(input: UpdateListInput!): List!
+  deleteList(input: DeleteListInput!): List!
+  createList(input: CreateListInput!): List!
+}
+
+input CreateTaskInput {
+  listId: String!
+  title: String!
+}
+
+input UpdateListInput {
+  id: String!
+  title: String!
+}
+
+input DeleteListInput {
+  id: String!
+}
+
+input CreateListInput {
+  title: String!
+}

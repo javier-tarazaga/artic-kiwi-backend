@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   CreateTaskDto,
+  DeleteTaskDto,
   TaskDto,
   TaskDtoWithoutId,
   UpdateTaskDto,
@@ -59,5 +60,14 @@ export class TaskRepository {
 
     const list = await this.getTask(input.id);
     return this.mapper.toDto(list, updated.upsertedId.toString());
+  }
+
+  async deleteTask(input: DeleteTaskDto): Promise<boolean> {
+    const deleted = await this.client
+      .db('artic-kiwi')
+      .collection<TaskDto>('tasks')
+      .deleteOne({ _id: new ObjectId(input.id) });
+
+    return deleted.acknowledged;
   }
 }

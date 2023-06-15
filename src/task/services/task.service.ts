@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTaskDto, TaskDto, UpdateTaskDto } from '../dtos';
+import { CreateTaskDto, DeleteTaskDto, TaskDto, UpdateTaskDto } from '../dtos';
 import { TaskRepository } from '../repositories';
 import { ListService } from 'src/list/services';
 
@@ -26,5 +26,9 @@ export class TaskService {
 
   async updateTask(input: UpdateTaskDto): Promise<TaskDto> {
     return this.taskRepository.updateTask(input);
+  }
+
+  async deleteTask(input: DeleteTaskDto): Promise<boolean> {
+    return this.taskRepository.deleteTask(input);
   }
 }

@@ -14,7 +14,10 @@ export type CreateTaskDto = Omit<TaskDto, 'id' | 'createdAt' | 'updatedAt'> & {
 };
 
 export interface UpdateTaskDto {
-  id: TaskDto['title'];
-  title: string;
-  updatedAt: Date;
+  id: TaskDto['id'];
+  title: TaskDto['title'];
+}
+
+export interface DeleteTaskDto {
+  id: TaskDto['id'];
 }

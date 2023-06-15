@@ -14,5 +14,6 @@ import { ListModule } from 'src/list/list.module';
     ...Object.values(Mappers),
     ...Object.values(Repositories),
   ],
+  exports: [...Object.values(Services)],
 })
 export class TaskModule {}

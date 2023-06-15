@@ -12,6 +12,9 @@ export class Task {
 @InputType()
 export class CreateTaskInput {
   @Field()
+  listId: string;
+
+  @Field()
   title: string;
 }
 
