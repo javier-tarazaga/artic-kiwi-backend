@@ -33,3 +33,9 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# misc
+.env
+AutheKey_*
+src/gateway/auth/apple/AuthKey_HW44R24C3Y.p8
+src/gateway/auth/apple/AuthKey_Y8D95N3T28.p8
