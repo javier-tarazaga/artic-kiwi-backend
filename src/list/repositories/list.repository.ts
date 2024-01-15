@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { List } from '../domain';
 import { ListPersistedEntity } from '../entities';
-import { Db, ObjectId } from 'mongodb';
+import { ClientSession, Db, ObjectId } from 'mongodb';
 import { UniqueEntityID } from '@app/core';
 import { ListMapper } from '../mappers';
 
@@ -27,12 +27,10 @@ export class ListRepository {
     return this.mapper.toDomain(found, new UniqueEntityID(found._id));
   }
 
-  async getListsForUser(userId: string): Promise<List[]> {
-    const objectId = new ObjectId(userId);
-
+  async getListsForUser(userId: UniqueEntityID): Promise<List[]> {
     const found = await this.collection
       .find({
-        userId: objectId,
+        userId: userId.toValue(),
       })
       .toArray();
 
@@ -61,6 +59,18 @@ export class ListRepository {
 
   async delete(id: string): Promise<boolean> {
     const deleted = await this.collection.deleteOne({ _id: new ObjectId(id) });
+
+    return deleted.acknowledged;
+  }
+
+  async delteUserLists(
+    userId: UniqueEntityID,
+    session?: ClientSession,
+  ): Promise<boolean> {
+    const deleted = await this.collection.deleteMany(
+      { userId: userId.toValue() },
+      { session },
+    );
 
     return deleted.acknowledged;
   }

@@ -7,6 +7,7 @@ import { UniqueEntityID } from '@app/core';
 import { ListDto } from '@app/common';
 import { EventPublisher } from '@nestjs/cqrs';
 import { ListMapper } from '../mappers';
+import { ClientSession } from 'mongodb';
 
 @Injectable()
 export class ListService {
@@ -17,7 +18,9 @@ export class ListService {
   ) {}
 
   async findForUser(userId: string): Promise<ListDto[]> {
-    const lists = await this.listRepo.getListsForUser(userId);
+    const lists = await this.listRepo.getListsForUser(
+      new UniqueEntityID(userId),
+    );
     return lists.map(this.mapper.toDto);
   }
 
@@ -82,5 +85,9 @@ export class ListService {
     await this.listRepo.delete(input.listId);
 
     return this.mapper.toDto(domain);
+  }
+
+  async delteUserLists(userId: string, session: ClientSession) {
+    await this.listRepo.delteUserLists(new UniqueEntityID(userId), session);
   }
 }
