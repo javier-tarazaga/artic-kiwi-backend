@@ -1,76 +1,66 @@
 import { Injectable } from '@nestjs/common';
-import {
-  CreateListDto,
-  DeleteListDto,
-  ListDto,
-  ListDtoWithoutId,
-  UpdateListDto,
-} from '../dtos';
-import { MongoClient, ObjectId } from 'mongodb';
-import { ListMapper } from 'src/list/mappers/list.mapper';
+import { List } from '../domain';
+import { ListPersistedEntity } from '../entities';
+import { Db, ObjectId } from 'mongodb';
+import { UniqueEntityID } from '@artic-kiwi/backend-core';
+import { ListMapper } from '../mappers';
 
 @Injectable()
 export class ListRepository {
+  private readonly collection =
+    this.client.collection<ListPersistedEntity>('lists');
+
   constructor(
-    private readonly client: MongoClient,
+    private readonly client: Db,
     private readonly mapper: ListMapper,
   ) {}
 
-  async getList(id: string): Promise<ListDto | null> {
-    const list = await this.client
-      .db('artic-kiwi')
-      .collection<ListDto>('lists')
-      .findOne({
-        _id: new ObjectId(id),
-      });
+  async findOne(id: string): Promise<List | null> {
+    const found = await this.collection.findOne({
+      _id: new ObjectId(id),
+    });
 
-    if (!list) {
+    if (!found) {
       return null;
     }
 
-    return this.mapper.toDto(list, id);
+    return this.mapper.toDomain(found, new UniqueEntityID(found._id));
   }
 
-  async getLists(): Promise<ListDto[]> {
-    const lists = await this.client
-      .db('artic-kiwi')
-      .collection<ListDto>('lists')
-      .find()
-      .toArray();
+  async getListsForUser(userId: string): Promise<List[]> {
+    const objectId = new ObjectId(userId);
 
-    return lists.map((list) => this.mapper.toDto(list, list._id.toString()));
+    const found = await this.collection.find({
+      userId: objectId,
+    })
+    .toArray();
+
+    return found.map((list) => this.mapper.toDomain(list, new UniqueEntityID(list._id)));
   }
 
-  async createList(input: CreateListDto): Promise<ListDto> {
-    const valueToInsert: ListDtoWithoutId = {
-      ...input,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+  async create(list: List): Promise<List> {
+    const raw = this.mapper.toPersistence(list);
+    const persisted = await this.collection.insertOne(raw);
 
-    const list = await this.client
-      .db('artic-kiwi')
-      .collection<Omit<ListDto, 'id'>>('lists')
-      .insertOne(valueToInsert);
-
-    return this.mapper.toDto(valueToInsert, list.insertedId.toString());
+    return this.mapper.toDomain(
+      raw,
+      new UniqueEntityID(persisted.insertedId),
+    );
   }
 
-  async updateList(input: UpdateListDto): Promise<ListDto> {
-    const updated = await this.client
-      .db('artic-kiwi')
-      .collection<ListDto>('lists')
-      .updateOne({ _id: new ObjectId(input.id) }, { $set: input });
+  async update(list: List): Promise<List | null> {
+    const raw = this.mapper.toPersistence(list);
 
-    const list = await this.getList(input.id);
-    return this.mapper.toDto(list, updated.upsertedId.toString());
+    await this.collection.updateOne(
+      { _id: new ObjectId(list.id.toString()) },
+      { $set: raw },
+    );
+
+    return this.findOne(list.id.toString());
   }
 
-  async deleteList(input: DeleteListDto): Promise<boolean> {
-    const deleted = await this.client
-      .db('artic-kiwi')
-      .collection<ListDto>('lists')
-      .deleteOne({ _id: new ObjectId(input.id) });
+  async delete(id: string): Promise<boolean> {
+    const deleted = await this.collection.deleteOne({ _id: new ObjectId(id) });
 
     return deleted.acknowledged;
   }

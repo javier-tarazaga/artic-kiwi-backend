@@ -13,7 +13,7 @@
       "entryFile": "index",
       "sourceRoot": "libs/core/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/core/tsconfig.lib.json"
+        "tsConfigPath": "libs/core/tsconfig.json"
       }
     },
     "server-errors": {
@@ -22,7 +22,7 @@
       "entryFile": "index",
       "sourceRoot": "libs/server-errors/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/server-errors/tsconfig.lib.json"
+        "tsConfigPath": "libs/server-errors/tsconfig.json"
       }
     }
   }

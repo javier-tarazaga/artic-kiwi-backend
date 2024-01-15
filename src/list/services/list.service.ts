@@ -1,38 +1,67 @@
 import { Injectable } from '@nestjs/common';
-import { CreateListDto, DeleteListDto, ListDto, UpdateListDto } from '../dtos';
-import { ListRepository } from 'src/list/repositories';
-import { ArticKiwiError, ArticKiwiException } from '@app/server-errors';
+import { CreateListDto, UpdateListDto } from '../dtos';
+import { ListRepository } from '../repositories';
+import { ServerException, ServerError } from '@artic-kiwi/server-errors';
+import { List } from '../domain';
+import { InjectServerLogger, ServerLogger, UniqueEntityID } from '@artic-kiwi/backend-core';
+import { ListDto } from '@artic-kiwi/common';
+import { EventPublisher } from '@nestjs/cqrs';
+import { ListMapper } from '../mappers';
 
 @Injectable()
 export class ListService {
-  constructor(private readonly listRepository: ListRepository) {}
+  constructor(
+    private readonly listRepo: ListRepository,
+    private readonly mapper: ListMapper,
+    private readonly publisher: EventPublisher,
+    @InjectServerLogger(ListService.name)
+    private readonly logger: ServerLogger,
+  ) {}
 
-  getList(id: string): Promise<ListDto> {
-    const list = this.listRepository.getList(id);
+  async findForUser(userId: string): Promise<ListDto[]> {
+    const lists = await this.listRepo.getListsForUser(userId);
+    return lists.map(this.mapper.toDto);
+  }
 
-    if (!list) {
-      throw new ArticKiwiException({
-        error: ArticKiwiError.Common.NotFound,
-        message: `List with id ${id} not found`,
+  async createList(input: CreateListDto): Promise<ListDto> {
+      const newList = this.publisher.mergeObjectContext(
+      List.create({
+        ...input,
+        userId: new UniqueEntityID(input.userId),
+        answers: []
+      }),
+    );
+
+    const created = await this.listRepo.create(newList);
+
+    newList.commit();
+
+    return this.mapper.toDto(created);
+  }
+
+  async updateList(input: UpdateListDto): Promise<ListDto> {
+    const domain = await this.listRepo.findOne(input.listId);
+    if (!domain) {
+      throw new ServerException({
+        error: ServerError.Common.NotFound,
+        message: 'List not found',
       });
     }
 
-    return list;
-  }
+    const list = this.publisher.mergeObjectContext(domain);
 
-  getLists(): Promise<ListDto[]> {
-    return this.listRepository.getLists();
-  }
+    list.update(input);
 
-  createList(input: CreateListDto): Promise<ListDto> {
-    return this.listRepository.createList(input);
-  }
+    const updated = await this.listRepo.update(list);
+    if (!updated) {
+      throw new ServerException({
+        error: ServerError.User.NotFound,
+        message: 'List not found',
+      });
+    }
 
-  updateList(input: UpdateListDto): Promise<ListDto> {
-    return this.listRepository.updateList(input);
-  }
+    list.commit();
 
-  deleteList(input: DeleteListDto): Promise<boolean> {
-    return this.listRepository.deleteList(input);
+    return this.mapper.toDto(updated);
   }
 }
