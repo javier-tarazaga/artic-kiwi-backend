@@ -3,18 +3,10 @@ import * as Services from './services';
 import * as Mappers from './mappers';
 import * as Repositories from './repositories';
 import { CqrsModule } from '@nestjs/cqrs';
-import { ServerLoggerModule } from '@artic-kiwi/backend-core';
-import { loggerOptions } from '../common';
-import { DatabaseModule } from '../database';
+import { DatabaseModule } from '../database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    CqrsModule,
-    ServerLoggerModule.forRoot({
-      pinoHttp: loggerOptions,
-    }),
-  ],
+  imports: [DatabaseModule, CqrsModule],
   providers: [
     ...Object.values(Services),
     ...Object.values(Mappers),

@@ -23,30 +23,24 @@ type List {
 }
 
 type Query {
-  lists: [List!]!
+  lists: List!
 }
 
 type Mutation {
-  createTask(input: CreateTaskInput!): Task!
+  createList(input: CreateListInput!): List!
   updateList(input: UpdateListInput!): List!
   deleteList(input: DeleteListInput!): List!
-  createList(input: CreateListInput!): List!
-}
-
-input CreateTaskInput {
-  listId: String!
-  title: String!
-}
-
-input UpdateListInput {
-  id: String!
-  title: String!
-}
-
-input DeleteListInput {
-  id: String!
 }
 
 input CreateListInput {
   title: String!
+}
+
+input UpdateListInput {
+  listId: String!
+  title: String!
+}
+
+input DeleteListInput {
+  listId: String!
 }

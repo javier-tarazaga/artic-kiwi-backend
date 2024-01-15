@@ -1,21 +1,22 @@
+import { UniqueEntityID } from '@app/core';
 import { Injectable } from '@nestjs/common';
 import { User } from '../domain';
 import { UserPersistedEntity } from '../entities';
-import { UniqueEntityID } from '@artic-kiwi/backend-core';
-import { UserDto } from '@artic-kiwi/common';
+import { UserDto } from '@app/common';
 
 @Injectable()
 export class UserMapper {
-  public toPersistence(domain: User): UserPersistedEntity {
+  public toPersistence(user: User): UserPersistedEntity {
     return {
-      _id: domain.id.toValue(),
-      username: domain.handle,
-      email: domain.email,
-      emailVerified: domain.emailVerified,
-      termsAcceptedAt: domain.termsAcceptedAt,
-      createdAt: domain.createdAt,
-      updatedAt: domain.updatedAt,
-      picture: domain.picture,
+      _id: user.id.toValue(),
+      username: user.handle,
+      email: user.email,
+      emailVerified: user.emailVerified,
+      termsAcceptedAt: user.termsAcceptedAt,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      notificationsToken: user.notificationsToken,
+      lastLoggedInAt: user.lastLoggedInAt,
     };
   }
 
@@ -31,7 +32,8 @@ export class UserMapper {
         termsAcceptedAt: persisted.termsAcceptedAt,
         createdAt: persisted.createdAt,
         updatedAt: persisted.updatedAt,
-        picture: persisted.picture,
+        notificationsToken: persisted.notificationsToken,
+        lastLoggedInAt: persisted.lastLoggedInAt,
       },
       insertedId,
     );
@@ -48,7 +50,8 @@ export class UserMapper {
       termsAcceptedAt: domain.termsAcceptedAt,
       createdAt: domain.createdAt,
       updatedAt: domain.updatedAt,
-      picture: domain.picture,
+      notificationsToken: domain.notificationsToken,
+      lastLoggedInAt: domain.lastLoggedInAt,
     };
   }
 }

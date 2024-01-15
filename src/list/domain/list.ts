@@ -1,18 +1,15 @@
-import { AggregateRoot, Optional, UniqueEntityID } from '@artic-kiwi/backend-core';
-import { Answer } from './answer';
+import { AggregateRoot, Optional, UniqueEntityID } from '@app/core';
+import { Task } from './task';
 
 interface ListProps {
   userId: UniqueEntityID;
-  answers: Answer[];
+  tasks: Task[];
   title: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-type CreateListProps = Optional<
-  ListProps,
-  'createdAt' | 'updatedAt'
->;
+type CreateListProps = Optional<ListProps, 'createdAt' | 'updatedAt'>;
 
 export interface ListUpdateProps {
   title: string;
@@ -27,8 +24,8 @@ export class List extends AggregateRoot<ListProps> {
     return this.props.title;
   }
 
-  get answers(): Answer[] {
-    return this.props.answers;
+  get tasks(): Task[] {
+    return this.props.tasks;
   }
 
   get createdAt(): Date {
@@ -39,10 +36,7 @@ export class List extends AggregateRoot<ListProps> {
     return this.props.updatedAt;
   }
 
-  public static create(
-    props: CreateListProps,
-    id?: UniqueEntityID,
-  ): List {
+  public static create(props: CreateListProps, id?: UniqueEntityID): List {
     const now = new Date();
     const list = new List(
       {
@@ -53,11 +47,6 @@ export class List extends AggregateRoot<ListProps> {
       id,
     );
 
-    // const idWasProvided = !!id;
-    // if (!idWasProvided) {
-    //   list.apply(new UserDailyProgressAggregateCreatedEvent(user));
-    // }
-
     return list;
   }
 
@@ -67,12 +56,11 @@ export class List extends AggregateRoot<ListProps> {
     this.props.updatedAt = new Date();
   }
 
-  public addAnswer(answer: Answer) {
-    this.props.answers.push(answer);
+  public addTask(task: Task) {
+    this.props.tasks.push(task);
   }
 
-  public removeAnswer(id: UniqueEntityID) {
-    this.props.answers = this.props.answers.filter((answer) => answer.id !== id);
+  public removeTask(id: UniqueEntityID) {
+    this.props.tasks = this.props.tasks.filter((task) => task.id !== id);
   }
 }
-

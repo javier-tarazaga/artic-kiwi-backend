@@ -1,5 +1,10 @@
 import { ObjectId } from 'mongodb';
 
+export interface UserNotificationsTokenEntity {
+  deviceToken: string;
+  updatedAt: Date;
+}
+
 export interface UserPersistedEntity {
   _id: ObjectId;
   username: string;
@@ -8,5 +13,7 @@ export interface UserPersistedEntity {
   emailVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
-  picture?: string;
+  notificationsToken?: UserNotificationsTokenEntity;
+  lastLoggedInAt?: Date;
+  referrerUserId?: ObjectId;
 }

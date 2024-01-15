@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateListDto, UpdateListDto } from '../dtos';
+import { CreateListDto, DeleteListDto, UpdateListDto } from '../dtos';
 import { ListRepository } from '../repositories';
-import { ServerException, ServerError } from '@artic-kiwi/server-errors';
+import { ServerException, ServerError } from '@app/server-errors';
 import { List } from '../domain';
-import { InjectServerLogger, ServerLogger, UniqueEntityID } from '@artic-kiwi/backend-core';
-import { ListDto } from '@artic-kiwi/common';
+import { UniqueEntityID } from '@app/core';
+import { ListDto } from '@app/common';
 import { EventPublisher } from '@nestjs/cqrs';
 import { ListMapper } from '../mappers';
 
@@ -14,8 +14,6 @@ export class ListService {
     private readonly listRepo: ListRepository,
     private readonly mapper: ListMapper,
     private readonly publisher: EventPublisher,
-    @InjectServerLogger(ListService.name)
-    private readonly logger: ServerLogger,
   ) {}
 
   async findForUser(userId: string): Promise<ListDto[]> {
@@ -24,11 +22,11 @@ export class ListService {
   }
 
   async createList(input: CreateListDto): Promise<ListDto> {
-      const newList = this.publisher.mergeObjectContext(
+    const newList = this.publisher.mergeObjectContext(
       List.create({
         ...input,
         userId: new UniqueEntityID(input.userId),
-        answers: []
+        tasks: [],
       }),
     );
 
@@ -63,5 +61,26 @@ export class ListService {
     list.commit();
 
     return this.mapper.toDto(updated);
+  }
+
+  async deleteList(input: DeleteListDto): Promise<ListDto> {
+    const domain = await this.listRepo.findOne(input.listId);
+    if (!domain) {
+      throw new ServerException({
+        error: ServerError.Common.NotFound,
+        message: 'List not found',
+      });
+    }
+
+    if (domain.userId.toString() !== input.userId) {
+      throw new ServerException({
+        error: ServerError.Common.Unauthorized,
+        message: 'Unauthorized',
+      });
+    }
+
+    await this.listRepo.delete(input.listId);
+
+    return this.mapper.toDto(domain);
   }
 }

@@ -1,5 +1,5 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
-import { Task } from '../task';
+import { Task } from './task.model';
 
 @ObjectType()
 export class List {
@@ -28,7 +28,7 @@ export class CreateListInput {
 @InputType()
 export class UpdateListInput {
   @Field()
-  id: string;
+  listId!: string;
 
   @Field()
   title: string;
@@ -37,5 +37,5 @@ export class UpdateListInput {
 @InputType()
 export class DeleteListInput {
   @Field()
-  id: string;
+  listId!: string;
 }

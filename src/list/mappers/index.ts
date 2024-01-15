@@ -1,2 +1,2 @@
-export * from './answer.mapper';
+export * from './task.mapper';
 export * from './list.mapper';

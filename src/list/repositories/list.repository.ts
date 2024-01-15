@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { List } from '../domain';
 import { ListPersistedEntity } from '../entities';
 import { Db, ObjectId } from 'mongodb';
-import { UniqueEntityID } from '@artic-kiwi/backend-core';
+import { UniqueEntityID } from '@app/core';
 import { ListMapper } from '../mappers';
 
 @Injectable()
@@ -30,22 +30,22 @@ export class ListRepository {
   async getListsForUser(userId: string): Promise<List[]> {
     const objectId = new ObjectId(userId);
 
-    const found = await this.collection.find({
-      userId: objectId,
-    })
-    .toArray();
+    const found = await this.collection
+      .find({
+        userId: objectId,
+      })
+      .toArray();
 
-    return found.map((list) => this.mapper.toDomain(list, new UniqueEntityID(list._id)));
+    return found.map((list) =>
+      this.mapper.toDomain(list, new UniqueEntityID(list._id)),
+    );
   }
 
   async create(list: List): Promise<List> {
     const raw = this.mapper.toPersistence(list);
     const persisted = await this.collection.insertOne(raw);
 
-    return this.mapper.toDomain(
-      raw,
-      new UniqueEntityID(persisted.insertedId),
-    );
+    return this.mapper.toDomain(raw, new UniqueEntityID(persisted.insertedId));
   }
 
   async update(list: List): Promise<List | null> {

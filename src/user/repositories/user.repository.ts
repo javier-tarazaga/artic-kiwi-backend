@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { User } from '../domain';
 import { UserMapper } from '../mappers';
 import { UserPersistedEntity } from '../entities';
-import { Db, ObjectId } from 'mongodb';
-import { UniqueEntityID } from '@artic-kiwi/backend-core';
+import { ClientSession, Db, ObjectId } from 'mongodb';
+import { UniqueEntityID } from '@app/core/domain';
 
 @Injectable()
 export class UserRepository {
@@ -27,9 +27,9 @@ export class UserRepository {
     return this.mapper.toDomain(user, new UniqueEntityID(user._id));
   }
 
-  async findOneByEmail(email: string): Promise<User | null> {
+  async findOneByHandle(handle: string): Promise<User | null> {
     const user = await this.collection.findOne({
-      email,
+      username: handle,
     });
 
     if (!user) {
@@ -37,6 +37,18 @@ export class UserRepository {
     }
 
     return this.mapper.toDomain(user, new UniqueEntityID(user._id));
+  }
+
+  async findBatch(offset: number, limit: number): Promise<User[]> {
+    const persisted = await this.collection
+      .find({})
+      .skip(offset)
+      .limit(limit)
+      .toArray();
+
+    return persisted.map((raw) =>
+      this.mapper.toDomain(raw, new UniqueEntityID(raw._id)),
+    );
   }
 
   async create(user: User): Promise<User> {
@@ -49,8 +61,25 @@ export class UserRepository {
     );
   }
 
-  async delete(id: string): Promise<boolean> {
-    const deleted = await this.collection.deleteOne({ _id: new ObjectId(id) });
+  async update(user: User): Promise<User | null> {
+    const rawUserCredential = this.mapper.toPersistence(user);
+
+    await this.collection.updateOne(
+      { _id: new ObjectId(user.id.toString()) },
+      { $set: rawUserCredential },
+    );
+
+    return this.findOne(user.id.toString());
+  }
+
+  async delete(
+    userId: UniqueEntityID,
+    session?: ClientSession,
+  ): Promise<boolean> {
+    const deleted = await this.collection.deleteOne(
+      { _id: userId.toValue() },
+      { session },
+    );
 
     return deleted.acknowledged;
   }

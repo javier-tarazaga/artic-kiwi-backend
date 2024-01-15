@@ -1,5 +1,11 @@
 import { ObjectId } from 'mongodb';
-import { AnswerPersistedEntity } from './answer.persisted.entity';
+
+export interface TaskPersistedEntity {
+  _id: ObjectId;
+  text: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export interface ListPersistedEntity {
   _id: ObjectId;
@@ -7,5 +13,5 @@ export interface ListPersistedEntity {
   createdAt: Date;
   updatedAt: Date;
   userId: ObjectId;
-  answers: AnswerPersistedEntity[];
+  tasks: TaskPersistedEntity[];
 }

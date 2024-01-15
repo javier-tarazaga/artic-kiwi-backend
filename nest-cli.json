@@ -24,6 +24,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/server-errors/tsconfig.json"
       }
+    },
+    "common": {
+      "type": "library",
+      "root": "libs/common",
+      "entryFile": "index",
+      "sourceRoot": "libs/common/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/common/tsconfig.json"
+      }
     }
   }
 }

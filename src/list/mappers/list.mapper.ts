@@ -1,24 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { List } from '../domain';
 import { ListPersistedEntity } from '../entities';
-import { AnswerMapper } from './answer.mapper';
-import { UniqueEntityID } from '@artic-kiwi/backend-core';
-import { ListDto } from '@artic-kiwi/common';
+import { TaskMapper } from './task.mapper';
+import { UniqueEntityID } from '@app/core';
+import { ListDto } from '@app/common';
 
 @Injectable()
 export class ListMapper {
-  constructor(
-    private readonly answerMapper: AnswerMapper,
-  ) {}
+  constructor(private readonly taskMapper: TaskMapper) {}
 
-  public toPersistence(
-    domain: List,
-  ): ListPersistedEntity {
+  public toPersistence(domain: List): ListPersistedEntity {
     return {
       _id: domain.id.toValue(),
       userId: domain.userId.toValue(),
       title: domain.title,
-      answers: domain.answers.map((answer) => this.answerMapper.toPersistence(answer)),
+      tasks: domain.tasks.map((answer) =>
+        this.taskMapper.toPersistence(answer),
+      ),
       createdAt: domain.createdAt,
       updatedAt: domain.updatedAt,
     };
@@ -31,7 +29,9 @@ export class ListMapper {
     const domain = List.create(
       {
         userId: new UniqueEntityID(persisted.userId),
-        answers: persisted.answers.map((answer) => this.answerMapper.toDomain(answer, new UniqueEntityID(answer._id))),
+        tasks: persisted.tasks.map((answer) =>
+          this.taskMapper.toDomain(answer, new UniqueEntityID(answer._id)),
+        ),
         title: persisted.title,
         createdAt: persisted.createdAt,
         updatedAt: persisted.updatedAt,
@@ -47,7 +47,7 @@ export class ListMapper {
       id: domain.id.toString(),
       userId: domain.userId.toString(),
       title: domain.title,
-      answers: domain.answers.map((answer) => this.answerMapper.toDto(answer)),
+      tasks: domain.tasks.map((answer) => this.taskMapper.toDto(answer)),
       createdAt: domain.createdAt,
       updatedAt: domain.updatedAt,
     };

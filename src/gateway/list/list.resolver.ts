@@ -1,11 +1,4 @@
-import {
-  Resolver,
-  ResolveField,
-  Parent,
-  Query,
-  Mutation,
-  Args,
-} from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import {
   CreateListInput,
   DeleteListInput,
@@ -13,38 +6,47 @@ import {
   UpdateListInput,
 } from './list.model';
 import { ListService } from 'src/list/services';
-import { TaskService } from 'src/task/services';
+import { UserDto, ListDto } from '@app/common';
 
 @Resolver(() => List)
 export class ListResolver {
-  constructor(
-    private listService: ListService,
-    private taskService: TaskService,
-  ) {}
+  constructor(private listService: ListService) {}
 
-  @Query(() => [List])
-  async lists() {
-    return this.listService.getLists();
+  @Query(() => List)
+  lists(@Context('me') me: UserDto): Promise<ListDto[]> {
+    return this.listService.findForUser(me.id);
   }
 
   @Mutation(() => List)
-  async createList(@Args('input') input: CreateListInput) {
-    return this.listService.createList(input);
+  async createList(
+    @Args('input') input: CreateListInput,
+    @Context('me') me: UserDto,
+  ) {
+    return this.listService.createList({
+      ...input,
+      userId: me.id,
+    });
   }
 
   @Mutation(() => List)
-  async updateList(@Args('input') input: UpdateListInput) {
-    return this.listService.updateList(input);
+  async updateList(
+    @Args('input') input: UpdateListInput,
+    @Context('me') me: UserDto,
+  ) {
+    return this.listService.updateList({
+      ...input,
+      userId: me.id,
+    });
   }
 
   @Mutation(() => List)
-  async deleteList(@Args('input') input: DeleteListInput) {
-    return this.listService.deleteList(input);
-  }
-
-  @ResolveField()
-  async tasks(@Parent() list: List) {
-    const { id } = list;
-    return this.taskService.getListTasks(id);
+  async deleteList(
+    @Args('input') input: DeleteListInput,
+    @Context('me') me: UserDto,
+  ) {
+    return this.listService.deleteList({
+      ...input,
+      userId: me.id,
+    });
   }
 }
